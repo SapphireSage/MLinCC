@@ -69,19 +69,17 @@ class Net(nn.Module):
         self.my_linear_net = nn.Sequential(
             # first layer
             nn.BatchNorm1d(num_features=3),
-            nn.Linear(in_features=3,out_features=90),
-            nn.Sigmoid(),
-            nn.BatchNorm1d(num_features=90),
+            nn.Linear(in_features=3,out_features=240),
+            nn.BatchNorm1d(num_features=240),
             # second layer
-            nn.Linear(in_features=90,out_features=90),
+            nn.Linear(in_features=240,out_features=120),
             nn.Sigmoid(),
-            nn.BatchNorm1d(num_features=90),
+            nn.BatchNorm1d(num_features=120),
             # third layer
-            nn.Linear(in_features=90,out_features=90),
-            nn.Sigmoid(),
-            nn.BatchNorm1d(num_features=90),
+            nn.Linear(in_features=120,out_features=120),
+            nn.BatchNorm1d(num_features=120),
             # output layer
-            nn.Linear(in_features=90,out_features=1),
+            nn.Linear(in_features=120,out_features=1),
         )
 
     def forward(self,x):
@@ -105,7 +103,7 @@ device = torch.device('cuda')
 ```python
 net = Net().to(device)
 
-opt = torch.optim.SGD(net.parameters(),lr=0.85)
+opt = torch.optim.SGD(net.parameters(),lr=0.65)
 criterion = nn.SmoothL1Loss()
 
 net.train()
@@ -135,7 +133,7 @@ net.train()
 
 ```python
 def fit(x,y):
-    for i in range(6000):
+    for i in range(30000):
     # 对x进行预测
         outputs = net(x) # net.forward(x)
         # 计算损失
@@ -155,6 +153,7 @@ X_train = torch.tensor(X_train).clone().detach().to(dtype).to(device)
 y_train = torch.tensor(y_train).clone().detach().to(dtype).to(device)
 X_test = torch.tensor(X_test).clone().detach().to(dtype).to(device)
 y_test = torch.tensor(y_test).clone().detach().to(dtype).to(device)
+stime = time.time()
 fit(X_train,y_train)
 net.eval()
 
@@ -170,14 +169,16 @@ r2 = r2_score(y_test.clone().detach().cpu().numpy(), y_pred)
 print('R2 test = ', r2)
 print('RSME train = ', train_mse)
 print('RSME test = ', rmse_MLR)
+etime = time.time()
+print('time use = ',etime-stime)
 
 
 ```
 
-    R2 test =  0.9977374956657998
-    RSME train =  0.046993777
-    RSME test =  0.04734874
-
+    R2 test =  0.999916332716038
+    RSME train =  0.008465949
+    RSME test =  0.009105244
+    time use =  83.99618768692017
 
 
 ```python
